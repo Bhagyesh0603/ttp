@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import API_BASE_URL from '../config/api';
 
 const CodeBlock = ({ code, language = 'javascript' }) => {
   const [copied, setCopied] = useState(false);
@@ -62,7 +63,7 @@ export default function ProjectDetail() {
   const fetchProject = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/projects/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/projects/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -80,7 +81,7 @@ export default function ProjectDetail() {
 
   const fetchCollections = async () => {
     try {
-      const response = await fetch('/collections', {
+      const response = await fetch(`${API_BASE_URL}/collections`, {
         headers: { 'x-api-key': project.api_key }
       });
       const data = await response.json();
@@ -97,7 +98,7 @@ export default function ProjectDetail() {
     if (!newCollectionName.trim()) return;
 
     try {
-      const response = await fetch('/collections', {
+      const response = await fetch(`${API_BASE_URL}/collections`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -120,7 +121,7 @@ export default function ProjectDetail() {
 
   const fetchRecords = async () => {
     try {
-      const response = await fetch(`/api/${id}/${selectedCollection}`, {
+      const response = await fetch(`${API_BASE_URL}/api/${id}/${selectedCollection}`, {
         headers: { 'x-api-key': project.api_key }
       });
       const data = await response.json();
@@ -134,7 +135,7 @@ export default function ProjectDetail() {
 
   const fetchCollectionSchema = async () => {
     try {
-      const response = await fetch(`/schema/${id}/${selectedCollection}/schema`, {
+      const response = await fetch(`${API_BASE_URL}/schema/${id}/${selectedCollection}/schema`, {
         headers: { 'x-api-key': project.api_key }
       });
       const data = await response.json();
@@ -148,7 +149,7 @@ export default function ProjectDetail() {
 
   const fetchCollectionStats = async () => {
     try {
-      const response = await fetch(`/api/${id}/${selectedCollection}/stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/${id}/${selectedCollection}/stats`, {
         headers: { 'x-api-key': project.api_key }
       });
       const data = await response.json();
@@ -166,7 +167,7 @@ export default function ProjectDetail() {
 
     try {
       const jsonData = JSON.parse(newRecordData);
-      const response = await fetch(`/api/${id}/${selectedCollection}`, {
+      const response = await fetch(`${API_BASE_URL}/api/${id}/${selectedCollection}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -236,7 +237,7 @@ export default function ProjectDetail() {
           <div>
             <label className="text-blue-100 text-sm font-medium">API Endpoint</label>
             <div className="bg-blue-800 bg-opacity-50 px-4 py-2 rounded mt-1 font-mono text-sm">
-              http://localhost:5000/api/{id}/[collection]
+              ${API_BASE_URL}/api/{id}/[collection]
             </div>
           </div>
           <div>
@@ -337,7 +338,7 @@ export default function ProjectDetail() {
               <div className="bg-purple-800 bg-opacity-50 rounded-lg p-4">
                 <h3 className="font-semibold text-lg mb-3">⚡ Batch Operations</h3>
                 <CodeBlock code={`// Batch Create (up to 100 records)
-fetch('http://localhost:5000/api/${id}/${selectedCollection}/batch', {
+fetch('${API_BASE_URL}/api/${id}/${selectedCollection}/batch', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -396,7 +397,7 @@ fetch('http://localhost:5000/api/${id}/${selectedCollection}/batch', {
               <>
                 <h3 className="text-lg font-semibold text-gray-900">Create a New Record (POST)</h3>
                 <CodeBlock code={`// Create a new record
-fetch('http://localhost:5000/api/${id}/${selectedCollection || 'users'}', {
+fetch('${API_BASE_URL}/api/${id}/${selectedCollection || 'users'}', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -422,7 +423,7 @@ fetch('http://localhost:5000/api/${id}/${selectedCollection || 'users'}', {
               <>
                 <h3 className="text-lg font-semibold text-gray-900">Get All Records (GET)</h3>
                 <CodeBlock code={`// Fetch all records from a collection
-fetch('http://localhost:5000/api/${id}/users', {
+fetch('${API_BASE_URL}/api/${id}/users', {
   headers: {
     'x-api-key': '${project.api_key}'
   }
@@ -444,7 +445,7 @@ fetch('http://localhost:5000/api/${id}/users', {
                 <CodeBlock code={`// Fetch a specific record by ID
 const recordId = 'YOUR_RECORD_ID';
 
-fetch(\`http://localhost:5000/api/${id}/users/\${recordId}\`, {
+fetch(\`${API_BASE_URL}/api/${id}/users/\${recordId}\`, {
   headers: {
     'x-api-key': '${project.api_key}'
   }
@@ -465,7 +466,7 @@ fetch(\`http://localhost:5000/api/${id}/users/\${recordId}\`, {
                 <CodeBlock code={`// Update an existing record
 const recordId = 'YOUR_RECORD_ID';
 
-fetch(\`http://localhost:5000/api/${id}/users/\${recordId}\`, {
+fetch(\`${API_BASE_URL}/api/${id}/users/\${recordId}\`, {
   method: 'PUT',
   headers: {
     'Content-Type': 'application/json',
@@ -493,7 +494,7 @@ fetch(\`http://localhost:5000/api/${id}/users/\${recordId}\`, {
                 <CodeBlock code={`// Delete a record
 const recordId = 'YOUR_RECORD_ID';
 
-fetch(\`http://localhost:5000/api/${id}/users/\${recordId}\`, {
+fetch(\`${API_BASE_URL}/api/${id}/users/\${recordId}\`, {
   method: 'DELETE',
   headers: {
     'x-api-key': '${project.api_key}'
@@ -513,22 +514,22 @@ fetch(\`http://localhost:5000/api/${id}/users/\${recordId}\`, {
               <>
                 <h3 className="text-lg font-semibold text-gray-900">Filter & Query Records (GET)</h3>
                 <CodeBlock code={`// Example 1: Exact match
-fetch('http://localhost:5000/api/${id}/users?role=admin', {
+fetch('${API_BASE_URL}/api/${id}/users?role=admin', {
   headers: { 'x-api-key': '${project.api_key}' }
 })
 
 // Example 2: Greater than / Less than
-fetch('http://localhost:5000/api/${id}/users?age_gt=25&age_lt=50', {
+fetch('${API_BASE_URL}/api/${id}/users?age_gt=25&age_lt=50', {
   headers: { 'x-api-key': '${project.api_key}' }
 })
 
 // Example 3: Pagination
-fetch('http://localhost:5000/api/${id}/users?page=1&limit=10', {
+fetch('${API_BASE_URL}/api/${id}/users?page=1&limit=10', {
   headers: { 'x-api-key': '${project.api_key}' }
 })
 
 // Example 4: Combined filters
-fetch('http://localhost:5000/api/${id}/users?role=admin&age_gt=21&limit=20', {
+fetch('${API_BASE_URL}/api/${id}/users?role=admin&age_gt=21&limit=20', {
   headers: { 'x-api-key': '${project.api_key}' }
 })
   .then(response => response.json())
@@ -561,7 +562,7 @@ function UsersList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/${id}/users', {
+    fetch('${API_BASE_URL}/api/${id}/users', {
       headers: { 'x-api-key': '${project.api_key}' }
     })
       .then(res => res.json())
@@ -699,3 +700,4 @@ function UsersList() {
     </div>
   );
 }
+
